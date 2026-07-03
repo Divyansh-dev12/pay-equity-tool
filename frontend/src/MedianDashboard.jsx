@@ -223,88 +223,88 @@ function Results({ data, filter, setFilter }) {
 
       {/* 2. Stat cards */}
       <div className="cards">
-        <StatCard value={hasFilter ? fs.total : s.total_employees} label="Employees analysed"
+        <StatCard value={hasFilter ? fs.total : s.total_employees} label="Headcount reviewed"
           sub={hasFilter ? `of ${s.total_employees} total` : null} />
-        <StatCard value={pct(displayGap)} label="Gender gap vs median"
+        <StatCard value={pct(displayGap)} label="Gender pay gap vs midpoint"
           color={posNegColor(displayGap)}
-          hint={`Women's avg position minus men's vs median${hasFilter ? ' · filtered' : ''}`} />
-        <StatCard value={`${displayFemBelow}%`} label="Women below median"
+          hint={`Women's avg pay positioning minus men's vs cohort midpoint${hasFilter ? ' · filtered' : ''}`} />
+        <StatCard value={`${displayFemBelow}%`} label="Women below midpoint"
           hint={`vs ${displayMalBelow}% of men${hasFilter ? ' · filtered' : ''}`} />
-        <StatCard value={hasFilter ? `${belowMedianEmps.length}` : s.cohorts} label={hasFilter ? 'Below median (filtered)' : 'Cohorts (function × level)'}
-          hint={hasFilter ? `${aboveMedianEmps.length} significantly above (>15%)` : null} />
+        <StatCard value={hasFilter ? `${belowMedianEmps.length}` : s.cohorts} label={hasFilter ? 'Below midpoint (filtered)' : 'Cohorts (function × grade)'}
+          hint={hasFilter ? `${aboveMedianEmps.length} above range (>15%)` : null} />
       </div>
 
       {/* 3. AI Insights */}
       <Insights insights={data.insights} />
 
-      {/* 4. How this model works */}
+      {/* 4. About this methodology */}
       <div className="panel">
-        <h2>How this model works</h2>
+        <h2>About this methodology</h2>
         <div className="explain-grid">
-          <Explainer title="The median line" icon="📏">
-            Every employee is compared to the <strong>median fixed pay</strong> of their cohort (function + level).
-            Here we use the <strong>{sourceLabel}</strong>.
+          <Explainer title="The cohort midpoint" icon="📏">
+            Every employee's fixed pay is benchmarked against the <strong>median of their cohort</strong> (function + grade),
+            using the <strong>{sourceLabel}</strong>.
           </Explainer>
-          <Explainer title="Position vs median" icon="🧭">
-            <strong>0%</strong> = paid exactly at median.{' '}
-            <span style={{ color: '#2f9e44', fontWeight: 700 }}>Positive</span> = above the line,{' '}
+          <Explainer title="Pay positioning vs midpoint" icon="🧭">
+            <strong>0%</strong> = fixed pay exactly at cohort midpoint.{' '}
+            <span style={{ color: '#2f9e44', fontWeight: 700 }}>Positive</span> = above midpoint,{' '}
             <span style={{ color: '#e03131', fontWeight: 700 }}>negative</span> = below.
           </Explainer>
-          <Explainer title="Why it's useful" icon="💡">
-            No statistical model needed — fully transparent and easy to defend against your own benchmarks or market data.
+          <Explainer title="Why this model" icon="💡">
+            No statistical assumptions required — audit-ready and straightforward to present to leadership or an external reviewer.
           </Explainer>
-          <Explainer title="Reading the gap" icon="⚖️">
-            <strong>Gender gap vs median</strong> = women's average position minus men's.
-            Negative means women sit further below the fair line.
+          <Explainer title="Interpreting the gender pay gap" icon="⚖️">
+            <strong>Gender pay gap vs midpoint</strong> = women's average pay positioning minus men's.
+            A negative figure means women sit further below the fair pay line.
           </Explainer>
         </div>
       </div>
 
       {/* 5. Male vs Female summary chips */}
       <div className="panel">
-        <h2>Male vs Female fixed pay {hasFilter && <span className="filter-note">filtered</span>}</h2>
+        <h2>Pay positioning by gender {hasFilter && <span className="filter-note">filtered</span>}</h2>
         <div className="mf-summary">
           <div className="mf-chip mf-male">
             <span>Men — median fixed pay</span>
             <strong>{formatINR(Math.round(maleMedSalary))}</strong>
-            <small>{hasFilter ? fs.maleCount : s.male_count} employees · avg {displayMalBelow}% below median</small>
+            <small>{hasFilter ? fs.maleCount : s.male_count} employees · avg {displayMalBelow}% below midpoint</small>
           </div>
           <div className="mf-chip mf-female">
             <span>Women — median fixed pay</span>
             <strong>{formatINR(Math.round(femaleMedSalary))}</strong>
-            <small>{hasFilter ? fs.femaleCount : s.female_count} employees · avg {displayFemBelow}% below median</small>
+            <small>{hasFilter ? fs.femaleCount : s.female_count} employees · avg {displayFemBelow}% below midpoint</small>
           </div>
           <div className="mf-chip mf-gap" style={{ borderColor: posNegColor(rawGapPct) }}>
-            <span>Raw pay difference (women vs men)</span>
+            <span>Unadjusted pay gap (women vs men)</span>
             <strong style={{ color: posNegColor(rawGapPct) }}>{pct(rawGapPct)}</strong>
-            <small>gender gap vs median: {pct(displayGap)}</small>
+            <small>gender pay gap vs midpoint: {pct(displayGap)}</small>
           </div>
         </div>
       </div>
 
       {/* 6. Best / Worst callouts */}
       <div className="callouts">
-        <MedianCallout kind="good" title="Most balanced function" fn={best} />
-        <MedianCallout kind="bad" title="Widest gap vs median" fn={worst} />
+        <MedianCallout kind="good" title="Best-practice function" fn={best} />
+        <MedianCallout kind="bad" title="Highest-risk function" fn={worst} />
       </div>
 
       {/* 7. Charts */}
       <div className="panel">
-        <h2>Position vs median — women vs men</h2>
+        <h2>Pay positioning vs cohort midpoint</h2>
         <p className="panel-hint">
-          Average % above/below the median line, by function.{' '}
-          <span style={{ color: '#2f9e44' }}>Above 0 = paid over median</span>,{' '}
-          <span style={{ color: '#e03131' }}>below 0 = under median</span>.
+          Average pay positioning above/below cohort midpoint, by function.{' '}
+          <span style={{ color: '#2f9e44' }}>Above 0 = above midpoint</span>,{' '}
+          <span style={{ color: '#e03131' }}>below 0 = below midpoint</span>.
         </p>
         <PositionChart rows={data.by_function} />
       </div>
 
       <div className="panel">
-        <h2>Where is the gap? By function</h2>
+        <h2>Gender pay gap by function</h2>
         <p className="panel-hint">
-          Women's position minus men's.{' '}
-          <span style={{ color: '#2f9e44' }}>Green = women at/above men</span>,{' '}
-          <span style={{ color: '#e03131' }}>red = women below</span>. Click bar to filter.
+          Women's average positioning minus men's vs cohort midpoint.{' '}
+          <span style={{ color: '#2f9e44' }}>Green = women at or above men</span>,{' '}
+          <span style={{ color: '#e03131' }}>red = women below</span>. Click to filter.
         </p>
         <GapChart rows={data.by_function} field="gap_vs_median_pct" selected={filter.function}
           onSelect={(name) => setFilter(f => ({ ...f, function: f.function === name ? null : name }))} />
@@ -324,7 +324,7 @@ function Results({ data, filter, setFilter }) {
       {/* 9. Recommended actions */}
       {data.recommendations && (
         <div className="panel actions-panel">
-          <h2>Recommended actions</h2>
+          <h2>Recommended Actions</h2>
           <div className={`rec-banner sev-${(data.recommendations.severity || '').toLowerCase()}`}>
             <div className="rec-head">
               <span className="rec-pattern">{data.recommendations.pattern}</span>
@@ -340,28 +340,28 @@ function Results({ data, filter, setFilter }) {
 
       {/* 10. Cost impact */}
       <div className="panel cost-impact-panel">
-        <h2>💸 Cost impact to close the gap {hasFilter && <span className="filter-note">filtered</span>}</h2>
+        <h2>💸 Equity Remediation Cost {hasFilter && <span className="filter-note">filtered</span>}</h2>
         <div className="cost-impact-grid">
           <div className="cost-item cost-underpaid">
-            <span>⚠️ Employees below cohort median</span>
+            <span>⚠️ Employees below cohort midpoint</span>
             <strong>{belowMedianEmps.length}</strong>
-            <em>Annual cost to bring to median: <b>{formatINR(belowMedianCost)}</b></em>
+            <em>Annual equity adjustment to midpoint: <b>{formatINR(belowMedianCost)}</b></em>
           </div>
           <div className="cost-item cost-overpaid">
-            <span>📈 Employees significantly above median (&gt;15%)</span>
+            <span>📈 Above-range employees (&gt;15% vs midpoint)</span>
             <strong>{aboveMedianEmps.length}</strong>
-            <em>Excess above median: <b>{formatINR(aboveMedianExcess)}</b></em>
+            <em>Above-range excess pay: <b>{formatINR(aboveMedianExcess)}</b></em>
           </div>
           <div className="cost-item cost-payroll">
-            <span>Total payroll {hasFilter ? '(filtered)' : ''}</span>
+            <span>Total fixed pay {hasFilter ? '(filtered)' : ''}</span>
             <strong>{formatINR(totalPayroll)}</strong>
-            <em>Gap = <b>{totalPayroll > 0 ? ((belowMedianCost / totalPayroll) * 100).toFixed(1) : '0'}%</b> of payroll</em>
+            <em>Equity gap = <b>{totalPayroll > 0 ? ((belowMedianCost / totalPayroll) * 100).toFixed(1) : '0'}%</b> of total fixed pay</em>
           </div>
           {aboveMedianEmps.length > 0 && belowMedianCost > 0 && (
             <div className="cost-item cost-net">
-              <span>💡 Natural rebalancing offset</span>
+              <span>💡 Attrition offset opportunity</span>
               <strong>{formatINR(Math.min(aboveMedianExcess, belowMedianCost))}</strong>
-              <em>If above-median employees turn over, replacements at market rate could offset this.</em>
+              <em>If above-range employees exit naturally, backfilling at midpoint rates could offset a portion of the equity adjustment cost.</em>
             </div>
           )}
         </div>
@@ -374,7 +374,7 @@ function Results({ data, filter, setFilter }) {
       <div className="panel">
         <div className="roster-head">
           <h2>
-            Employee roster
+            Employee Pay Detail
             {hasFilter && <span className="filter-note">filtered</span>}
             <span className="count-badge">{rosterRows.length}</span>
           </h2>
@@ -383,21 +383,21 @@ function Results({ data, filter, setFilter }) {
         <div className="roster-filter-tabs">
           <button className={rosterFilter === 'all' ? 'tab active' : 'tab'}
             onClick={() => setRosterFilter('all')}>
-            All employees ({filteredEmployees.length})
+            Full headcount ({filteredEmployees.length})
           </button>
           <button className={rosterFilter === 'below' ? 'tab active tab-warn' : 'tab'}
             onClick={() => setRosterFilter('below')}>
-            ⚠️ Below median ({belowMedianEmps.length})
+            ⚠️ Below midpoint ({belowMedianEmps.length})
           </button>
           <button className={rosterFilter === 'above' ? 'tab active tab-above' : 'tab'}
             onClick={() => setRosterFilter('above')}>
-            📈 Above median &gt;15% ({aboveMedianEmps.length})
+            📈 Above range &gt;15% ({aboveMedianEmps.length})
           </button>
         </div>
         <p className="panel-hint">
-          {rosterFilter === 'all' && 'All employees sorted by position vs median (most below first). Red = below median, green = above.'}
-          {rosterFilter === 'below' && 'Employees paid below their cohort median. Sorted by largest shortfall first.'}
-          {rosterFilter === 'above' && 'Employees paid more than 15% above their cohort median. Sorted by largest excess first.'}
+          {rosterFilter === 'all' && 'Full headcount sorted by pay positioning vs cohort midpoint (furthest below first). ⚠️ = below midpoint, 📈 = above range.'}
+          {rosterFilter === 'below' && 'Employees whose fixed pay falls below their cohort midpoint. Sorted by largest shortfall.'}
+          {rosterFilter === 'above' && 'Employees paid more than 15% above their cohort midpoint. Sorted by largest overage.'}
           {totalRosterPages > 1 && ` · Page ${rosterPage + 1} of ${totalRosterPages} (${PAGE_SIZE}/page)`}
         </p>
         <div className="table-wrap">
@@ -528,16 +528,16 @@ function MedianAnalytics({ employees, summary, fs, hasFilter, belowMedianCost, b
 
   return (
     <div className="panel analytics-panel">
-      <h2>📊 Analytics overview {hasFilter && <span className="filter-note">filtered</span>}</h2>
+      <h2>📊 Pay Equity Overview {hasFilter && <span className="filter-note">filtered</span>}</h2>
 
       {/* Totals row */}
       <div className="analytics-totals">
-        <div className="a-total"><span>Total employees</span><strong>{employees.length}</strong></div>
-        <div className="a-total"><span>Total payroll</span><strong>{fmtL(totalPayroll)}</strong></div>
-        <div className="a-total warn"><span>Below median</span><strong>{belowCount}</strong></div>
-        <div className="a-total warn"><span>Cost to fix</span><strong>{fmtL(belowMedianCost)}</strong></div>
-        <div className="a-total good"><span>Above median &gt;15%</span><strong>{aboveCount}</strong></div>
-        <div className="a-total"><span>Gap % of payroll</span><strong>{totalPayroll > 0 ? ((belowMedianCost / totalPayroll) * 100).toFixed(1) : 0}%</strong></div>
+        <div className="a-total"><span>Headcount reviewed</span><strong>{employees.length}</strong></div>
+        <div className="a-total"><span>Total fixed pay</span><strong>{fmtL(totalPayroll)}</strong></div>
+        <div className="a-total warn"><span>Below midpoint</span><strong>{belowCount}</strong></div>
+        <div className="a-total warn"><span>Equity adj. cost</span><strong>{fmtL(belowMedianCost)}</strong></div>
+        <div className="a-total good"><span>Above range &gt;15%</span><strong>{aboveCount}</strong></div>
+        <div className="a-total"><span>Gap as % of fixed pay</span><strong>{totalPayroll > 0 ? ((belowMedianCost / totalPayroll) * 100).toFixed(1) : 0}%</strong></div>
       </div>
 
       <div className="analytics-grid">
@@ -560,7 +560,7 @@ function MedianAnalytics({ employees, summary, fs, hasFilter, belowMedianCost, b
 
         {/* 2. Pay positioning status pie */}
         <div className="analytics-card">
-          <h3>Pay positioning vs median</h3>
+          <h3>Pay positioning vs midpoint</h3>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie data={statusPie} cx="50%" cy="50%" outerRadius={75} dataKey="value"

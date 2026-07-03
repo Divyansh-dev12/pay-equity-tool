@@ -388,61 +388,61 @@ class PayEquityRegressionAnalyzer:
         pattern = None
         cg_pct = abs(controlled_gap * 100)
 
-        # Pattern B: clear pay discrimination (large controlled gap)
+        # Pattern B: material adjusted gap — equity audit required
         if controlled_gap <= -0.05:
             pattern = 'B'
             recommendations.append({
-                'pattern': 'Pay Discrimination Risk',
+                'pattern': 'Material Adjusted Pay Gap — Audit Required',
                 'severity': 'Critical',
-                'message': f'A {cg_pct:.1f}% unexplained pay gap remains between women and men in comparable roles (same level, tenure, performance, function and location). This is the statistical signature of pay bias and warrants immediate audit and remediation.',
+                'message': f'A {cg_pct:.1f}% adjusted pay gap persists between women and men in comparable roles (same grade, tenure, performance, function and location). Immediate pay equity audit and equity adjustment are recommended.',
                 'actions': [
-                    'Run a role-and-level compensation audit and cost the correction',
-                    'Recalibrate salary offers and merit-increase guidelines',
-                    'Fund a remediation pool to close like-for-like gaps this cycle',
-                    'Publish transparent pay bands to prevent recurrence',
+                    'Commission a grade-by-grade compensation audit and quantify the total equity adjustment cost',
+                    'Recalibrate salary offer guidelines and merit-increase matrices for flagged functions',
+                    'Establish a dedicated equity adjustment budget to close like-for-like gaps in the current review cycle',
+                    'Publish structured pay bands to constrain future below-range placements',
                 ]
             })
 
-        # Moderate: statistically real but smaller controlled gap
+        # Moderate: real gap — targeted corrections in next cycle
         elif controlled_gap <= -0.02:
             pattern = 'B-moderate'
             recommendations.append({
-                'pattern': 'Targeted Remediation Needed',
+                'pattern': 'Targeted Equity Correction Required',
                 'severity': 'High',
-                'message': f'A {cg_pct:.1f}% like-for-like gap favours men. It is smaller than a systemic-bias threshold but still real — concentrated in specific functions rather than company-wide. Fix the pockets before they widen.',
+                'message': f'A {cg_pct:.1f}% adjusted pay gap favours men. The disparity is function-specific rather than organisation-wide — address the at-risk cohorts before the gap widens across review cycles.',
                 'actions': [
-                    'Focus remediation on the functions with the largest gaps (see breakdown)',
-                    'Review this year’s increase and promotion decisions in those functions',
-                    'Set a target to bring every function within ±2% next cycle',
-                    'Re-run this analysis after adjustments to confirm the gap closed',
+                    'Prioritise equity corrections in functions with the largest adjusted gaps (see function breakdown)',
+                    'Review current-cycle merit increase and promotion decisions in flagged functions',
+                    'Set a remediation target: bring every function within ±2% adjusted gap by next review cycle',
+                    'Re-run the pay equity analysis post-corrections to confirm gap closure',
                 ]
             })
 
-        # Pattern A: representation issue (fair within roles, gap from segregation)
+        # Pattern A: representation gap — pipeline intervention needed
         elif uncontrolled_gap <= -0.08 or uncontrolled_gap >= 0.08:
             pattern = 'A'
             recommendations.append({
-                'pattern': 'Pipeline & Representation Focus',
+                'pattern': 'Grade Distribution & Pipeline Gap',
                 'severity': 'Medium',
-                'message': 'Pay is broadly equitable for comparable work, but an overall gap exists because women and men are distributed differently across levels and functions. The lever here is representation, not pay correction.',
+                'message': 'Fixed pay is broadly equitable for comparable roles, but an overall pay gap exists because women and men are distributed differently across grades and functions. The primary lever is pipeline and representation, not pay correction.',
                 'actions': [
-                    'Analyse promotion velocity and hiring mix by gender and level',
-                    'Build pipelines into higher-paying functions and senior grades',
-                    'Sponsor and mentor under-represented talent toward senior roles',
-                    'Track representation alongside pay each quarter',
+                    'Analyse promotion velocity and external hire mix by gender and grade',
+                    'Build targeted pipelines into higher-paying functions and senior grades',
+                    'Implement structured sponsorship and succession planning for under-represented talent',
+                    'Track grade distribution and promotion rates by gender alongside pay equity each quarter',
                 ]
             })
 
-        # Default: healthy
+        # Default: equitable
         else:
             recommendations.append({
-                'pattern': 'Balanced Pay Equity',
+                'pattern': 'Pay Equity in Good Standing',
                 'severity': 'Low',
-                'message': 'Like-for-like pay is balanced and no systemic gap is detected. Keep monitoring so it stays that way.',
+                'message': 'The adjusted pay gap is within acceptable range and no material disparity is detected. Maintain the current standard with regular monitoring.',
                 'actions': [
-                    'Establish a regular (quarterly) pay-equity audit',
-                    'Monitor promotion velocity by gender',
-                    'Maintain transparent pay bands',
+                    'Run a formal pay equity review on a quarterly basis to detect early drift',
+                    'Monitor promotion velocity and grade distribution by gender each cycle',
+                    'Maintain published pay band ranges to reinforce internal equity',
                 ]
             })
 

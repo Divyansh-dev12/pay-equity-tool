@@ -224,14 +224,14 @@ function Results({ data, filter, setFilter }) {
 
       {/* 2. Stat cards */}
       <div className="cards">
-        <StatCard value={hasFilter ? fs.total : stats.observations} label="Employees analysed"
+        <StatCard value={hasFilter ? fs.total : stats.observations} label="Headcount reviewed"
           sub={hasFilter ? `of ${stats.observations} total` : null} />
-        <StatCard value={pct(controlled)} label="Controlled gap (like-for-like)" color={gapColor(controlled)}
-          hint="Model-wide · gap after making role, level, tenure, performance & location equal" />
-        <StatCard value={pct(displayRawGap)} label="Raw gap (uncontrolled)" color={gapColor(displayRawGap)}
-          hint={hasFilter ? 'Filtered view' : 'Plain difference in typical pay, before adjustment'} />
-        <StatCard value={r2 == null ? '—' : r2.toFixed(2)} label="Model fit (R²)"
-          hint="Model-wide · share of pay differences the model explains" />
+        <StatCard value={pct(controlled)} label="Adjusted pay gap (like-for-like)" color={gapColor(controlled)}
+          hint="Organisation-wide · pay gap after controlling for grade, tenure, performance, function and location" />
+        <StatCard value={pct(displayRawGap)} label="Unadjusted pay gap" color={gapColor(displayRawGap)}
+          hint={hasFilter ? 'Filtered view' : 'Median pay difference before adjustment — reflects pay rates and grade distribution'} />
+        <StatCard value={r2 == null ? '—' : r2.toFixed(2)} label="Model confidence (R²)"
+          hint="Organisation-wide · share of fixed pay variation explained by the model" />
       </div>
 
       {/* 3. AI Insights */}
@@ -240,30 +240,33 @@ function Results({ data, filter, setFilter }) {
       {/* Data quality checks */}
       {data.data_quality && <DataQuality dq={data.data_quality} />}
 
-      {/* 4. How to read this */}
+      {/* 4. About this analysis */}
       <div className="panel">
-        <h2>How to read this</h2>
+        <h2>About this analysis</h2>
         <div className="explain-grid">
-          <Explainer title="What is R²?" icon="🎯">
-            R² is <strong>{r2 == null ? '—' : (r2 * 100).toFixed(0)}%</strong> — the model explains that share
-            of why fixed pay differs. Closer to 100% = more trustworthy the controlled gap.
+          <Explainer title="Model confidence (R²)" icon="🎯">
+            R² of <strong>{r2 == null ? '—' : (r2 * 100).toFixed(0)}%</strong> means the model accounts for that share
+            of fixed pay variation. Above 85% indicates high confidence in the adjusted pay gap figure.
           </Explainer>
-          <Explainer title="How we predict pay" icon="🧮">
-            We learn how much <strong>level, tenure, performance, function and location</strong> are worth,
-            predict what each person <em>should</em> earn, and the leftover gender difference is the <strong>controlled gap</strong>.
+          <Explainer title="Pay prediction methodology" icon="🧮">
+            The model uses <strong>grade, tenure, performance, function and location</strong> to establish a
+            predicted pay range for each employee. The residual gender difference — after these factors are held
+            constant — is the <strong>adjusted pay gap</strong>.
           </Explainer>
-          <Explainer title="Uncontrolled gap" icon="📏">
-            The <strong>raw</strong> difference in typical pay — reflects pay <em>and</em> representation.
+          <Explainer title="Unadjusted pay gap" icon="📏">
+            The headline pay difference between genders before any adjustment — reflects both <em>pay rates</em> and
+            how men and women are distributed across grades and functions.
           </Explainer>
-          <Explainer title="Controlled gap" icon="⚖️">
-            The gap for <strong>the same job, level and profile</strong> — the like-for-like number. Negative = women paid less.
+          <Explainer title="Adjusted pay gap" icon="⚖️">
+            The like-for-like pay gap, holding grade, function and individual profile constant.
+            A negative figure means women are paid less for equivalent work.
           </Explainer>
         </div>
       </div>
 
       {/* 5. Male vs Female summary chips */}
       <div className="panel">
-        <h2>Male vs Female fixed pay {hasFilter && <span className="filter-note">filtered</span>}</h2>
+        <h2>Pay positioning by gender {hasFilter && <span className="filter-note">filtered</span>}</h2>
         <div className="mf-summary">
           <div className="mf-chip mf-male">
             <span>Men — median fixed pay</span>
@@ -276,17 +279,17 @@ function Results({ data, filter, setFilter }) {
             <small>{hasFilter ? fs.femaleCount : gs.female_count} employees</small>
           </div>
           <div className="mf-chip mf-gap" style={{ borderColor: gapColor(displayRawGap) }}>
-            <span>Raw difference (women vs men)</span>
+            <span>Unadjusted pay gap (women vs men)</span>
             <strong style={{ color: gapColor(displayRawGap) }}>{pct(displayRawGap)}</strong>
-            <small>unadjusted median gap</small>
+            <small>median pay difference before adjustment</small>
           </div>
         </div>
       </div>
 
       {/* 6. Best / Worst callouts */}
       <div className="callouts">
-        <Callout kind="good" title="Following the right approach" fn={bd.best_function} />
-        <Callout kind="bad" title="Biggest gap to fix" fn={bd.worst_function} />
+        <Callout kind="good" title="Benchmark function" fn={bd.best_function} />
+        <Callout kind="bad" title="Priority function for equity review" fn={bd.worst_function} />
       </div>
 
       {/* 7. Interactive Explorer (charts + filter) */}
@@ -300,7 +303,7 @@ function Results({ data, filter, setFilter }) {
 
       {/* 8. Recommended actions */}
       <div className="panel actions-panel">
-        <h2>Recommended actions</h2>
+        <h2>Recommended Actions</h2>
         <div className={`rec-banner sev-${(rec.recommendations[0].severity || '').toLowerCase()}`}>
           <div className="rec-head">
             <span className="rec-pattern">{rec.recommendations[0].pattern}</span>
@@ -315,28 +318,28 @@ function Results({ data, filter, setFilter }) {
 
       {/* 9. Cost impact */}
       <div className="panel cost-impact-panel">
-        <h2>💸 Cost impact to close the gap {hasFilter && <span className="filter-note">filtered</span>}</h2>
+        <h2>💸 Equity Remediation Cost {hasFilter && <span className="filter-note">filtered</span>}</h2>
         <div className="cost-impact-grid">
           <div className="cost-item cost-underpaid">
-            <span>⚠️ Underpaid employees</span>
+            <span>⚠️ Below-range employees</span>
             <strong>{displayRemCount}</strong>
-            <em>Annual cost to fix: <b>{formatINR(displayRemCost)}</b></em>
+            <em>Annual equity adjustment: <b>{formatINR(displayRemCost)}</b></em>
           </div>
           <div className="cost-item cost-overpaid">
-            <span>📈 Above-model employees (&gt;15% over predicted)</span>
+            <span>📈 Above-range employees (&gt;15% vs predicted pay)</span>
             <strong>{overpaidRows.length}</strong>
-            <em>Market over-positioning: <b>{formatINR(overpaidExcess)}</b></em>
+            <em>Above-range excess pay: <b>{formatINR(overpaidExcess)}</b></em>
           </div>
           <div className="cost-item cost-payroll">
-            <span>Total payroll {hasFilter ? '(filtered)' : ''}</span>
+            <span>Total fixed pay {hasFilter ? '(filtered)' : ''}</span>
             <strong>{formatINR(totalPayroll)}</strong>
-            <em>Gap = <b>{totalPayroll > 0 ? ((displayRemCost / totalPayroll) * 100).toFixed(1) : '0'}%</b> of payroll</em>
+            <em>Equity gap = <b>{totalPayroll > 0 ? ((displayRemCost / totalPayroll) * 100).toFixed(1) : '0'}%</b> of total fixed pay</em>
           </div>
           {overpaidRows.length > 0 && displayRemCost > 0 && (
             <div className="cost-item cost-net">
-              <span>💡 Natural rebalancing offset</span>
+              <span>💡 Attrition offset opportunity</span>
               <strong>{formatINR(Math.min(overpaidExcess, displayRemCost))}</strong>
-              <em>If above-model employees turn over, replacements at predicted rates could offset this.</em>
+              <em>If above-range employees exit naturally, backfilling at predicted pay range could offset a portion of the equity adjustment cost.</em>
             </div>
           )}
         </div>
@@ -349,7 +352,7 @@ function Results({ data, filter, setFilter }) {
       <div className="panel">
         <div className="roster-head">
           <h2>
-            Employee roster
+            Employee Pay Detail
             {hasFilter && <span className="filter-note">filtered</span>}
             <span className="count-badge">{rosterRows.length}</span>
           </h2>
@@ -358,21 +361,21 @@ function Results({ data, filter, setFilter }) {
         <div className="roster-filter-tabs">
           <button className={rosterFilter === 'all' ? 'tab active' : 'tab'}
             onClick={() => setRosterFilter('all')}>
-            All employees ({filteredPredictions.length})
+            Full headcount ({filteredPredictions.length})
           </button>
           <button className={rosterFilter === 'underpaid' ? 'tab active tab-warn' : 'tab'}
             onClick={() => setRosterFilter('underpaid')}>
-            ⚠️ Underpaid ({underpaidRows.length})
+            ⚠️ Below range ({underpaidRows.length})
           </button>
           <button className={rosterFilter === 'overpaid' ? 'tab active tab-above' : 'tab'}
             onClick={() => setRosterFilter('overpaid')}>
-            📈 Above model ({overpaidRows.length})
+            📈 Above range ({overpaidRows.length})
           </button>
         </div>
         <p className="panel-hint">
-          {rosterFilter === 'all' && 'All employees. ⚠️ rows = below model prediction, 📈 = significantly above (+15%). Sorted by shortfall size.'}
-          {rosterFilter === 'underpaid' && 'Employees paid below what the model predicts for their profile. Sorted by largest shortfall first.'}
-          {rosterFilter === 'overpaid' && 'Employees paid >15% above model prediction. These are at market over-positioning risk — if they leave, backfills would cost less. Sorted by excess pay (largest first).'}
+          {rosterFilter === 'all' && 'Full headcount. ⚠️ = below predicted pay range, 📈 = above range (+15%). Sorted by largest equity shortfall.'}
+          {rosterFilter === 'underpaid' && 'Employees whose fixed pay falls below their predicted pay range for their grade and profile. Sorted by largest shortfall.'}
+          {rosterFilter === 'overpaid' && 'Employees paid more than 15% above their predicted pay range. Natural attrition and backfill at range rates would reduce the above-range excess. Sorted by largest overage.'}
           {totalRosterPages > 1 && ` · Page ${rosterPage + 1} of ${totalRosterPages} (${PAGE_SIZE}/page)`}
         </p>
         <RosterTable rows={pageRows} rosterFilter={rosterFilter} overpaidIds={new Set(overpaidRows.map(r => r.employee_id))} />
@@ -561,16 +564,16 @@ function RegressionAnalytics({ predictions, gs, fs, hasFilter }) {
 
   return (
     <div className="panel analytics-panel">
-      <h2>📊 Analytics overview {hasFilter && <span className="filter-note">filtered</span>}</h2>
+      <h2>📊 Pay Equity Overview {hasFilter && <span className="filter-note">filtered</span>}</h2>
 
       {/* Totals row */}
       <div className="analytics-totals">
-        <div className="a-total"><span>Total employees</span><strong>{predictions.length}</strong></div>
-        <div className="a-total"><span>Total payroll</span><strong>{fmtL(totalPayroll)}</strong></div>
-        <div className="a-total warn"><span>Underpaid</span><strong>{underpaidCount}</strong></div>
-        <div className="a-total warn"><span>Cost to fix</span><strong>{fmtL(underpaidCost)}</strong></div>
-        <div className="a-total good"><span>Above model</span><strong>{overpaidCount}</strong></div>
-        <div className="a-total"><span>Gap % of payroll</span><strong>{totalPayroll > 0 ? ((underpaidCost / totalPayroll) * 100).toFixed(1) : 0}%</strong></div>
+        <div className="a-total"><span>Headcount reviewed</span><strong>{predictions.length}</strong></div>
+        <div className="a-total"><span>Total fixed pay</span><strong>{fmtL(totalPayroll)}</strong></div>
+        <div className="a-total warn"><span>Below range</span><strong>{underpaidCount}</strong></div>
+        <div className="a-total warn"><span>Equity adj. cost</span><strong>{fmtL(underpaidCost)}</strong></div>
+        <div className="a-total good"><span>Above range</span><strong>{overpaidCount}</strong></div>
+        <div className="a-total"><span>Gap as % of fixed pay</span><strong>{totalPayroll > 0 ? ((underpaidCost / totalPayroll) * 100).toFixed(1) : 0}%</strong></div>
       </div>
 
       <div className="analytics-grid">
