@@ -97,7 +97,7 @@ def _run_regression(df: pd.DataFrame) -> dict:
 # --------------------------------------------------------------------------- #
 # Meta / sample data
 # --------------------------------------------------------------------------- #
-@app.get("/")
+@app.get("/health")
 def read_root():
     return {"status": "online", "message": "Pay Equity Analyzer API", "version": "2.0.0"}
 
