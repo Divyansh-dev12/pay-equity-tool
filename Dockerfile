@@ -1,6 +1,4 @@
-# Multi-stage build for pay-equity-tool
-
-# Stage 1: Build frontend
+# Stage 1: Build React frontend
 FROM node:18-alpine AS frontend-builder
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
@@ -8,22 +6,19 @@ RUN npm ci --silent
 COPY frontend/ ./
 RUN npm run build
 
-# Stage 2: Python backend with frontend
+# Stage 2: FastAPI backend + built frontend
 FROM python:3.11-slim
-WORKDIR /app
+WORKDIR /app/backend
 
-# Install Python dependencies
+# Python dependencies
 COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend code
-COPY backend/ ./backend/
+# Backend source (imports resolve relative to /app/backend)
+COPY backend/ ./
 
-# Copy built frontend
-COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+# Frontend build → /app/frontend_dist (main.py mounts this path)
+COPY --from=frontend-builder /app/frontend/dist /app/frontend_dist
 
-# Expose ports
 EXPOSE 8000
-
-# Run backend (serve frontend as static files)
-CMD ["python", "-m", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

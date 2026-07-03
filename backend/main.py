@@ -1,6 +1,8 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
+from fastapi.staticfiles import StaticFiles
+import os
 import pandas as pd
 import numpy as np
 import io
@@ -261,6 +263,12 @@ def download_sample_employees():
 @app.get("/api/download/sample-median")
 def download_sample_median():
     return _csv_response(generate_median_reference(), 'sample_median_benchmark.csv')
+
+
+# Serve the built React frontend (production only — in dev, Vite handles this).
+_DIST = os.path.join(os.path.dirname(__file__), '..', 'frontend_dist')
+if os.path.exists(_DIST):
+    app.mount("/", StaticFiles(directory=_DIST, html=True), name="static")
 
 
 if __name__ == "__main__":

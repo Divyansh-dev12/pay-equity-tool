@@ -1,6 +1,7 @@
 // Indian number + currency formatting helpers. All money is whole rupees (no decimals).
 
-export const API_URL = 'http://localhost:8000';
+// Empty string → relative URLs work in both dev (via Vite proxy) and production (same origin).
+export const API_URL = '';
 
 // ₹25,00,000  (Indian digit grouping)
 export function formatINR(n) {
